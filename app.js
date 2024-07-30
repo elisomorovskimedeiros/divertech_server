@@ -14,15 +14,16 @@ porta = definicoes.definicoesExpress.porta;
 
 
 //Setagem do express
-app.use('/static', express.static(__dirname + '/public'));
+//app.use('/static', express.static(__dirname + '/public'));
 app.use(methodOverride("_method"));
 app.set("view engine", "ejs");
 
-
+app.use(express.static("public"));
 
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(express.json());
+app.use(express.json({limit: '50mb'}));
 app.use(router);
+
 
 var dir = path.join(__dirname, 'public');
 

@@ -60,6 +60,17 @@ const Cliente = {
     inserirNovoCliente: async(cliente) => {
         let query = queryInsercaoCliente(cliente);
         return await db.consultarDb(query);
+    },
+
+    editarCliente: async(cliente) => {
+        let query = `UPDATE cliente ` + 
+            `SET nome = "${cliente.nome}", cpf = "${cliente.cpf}", telefone = "${cliente.telefone}", `+
+            `telefone_recado = "${cliente.telefone_recado}", email = "${cliente.email}", ` + 
+            `data_nascimento = "${cliente.data_nascimento}", logradouro = "${cliente.logradouro}",` +
+            `numero = "${cliente.numero}", bairro = "${cliente.bairro}", cidade = "${cliente.cidade}", ` + 
+            `complemento = "${cliente.complemento}", observacao_endereco = "${cliente.observacao_endereco}", ` +
+            `observacao_cliente = "${cliente.observacao_cliente}" WHERE id_cliente = ?`;
+        return await db.consultarDb(query, cliente.id_cliente);
     }
 }
 

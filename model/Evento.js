@@ -39,7 +39,6 @@ const queryInsercaoEvento = (dadosDoEvento) => {
 const queryInserirBrinquedosNoEvento = (id_evento, brinquedos) => {
     let query = "INSERT INTO evento_brinquedo (brinquedo, evento) VALUES ";
     brinquedos.forEach((brinquedo, indice) => {
-        console.log(brinquedo);
         query = query + "(" + String(brinquedo.id_brinquedo) + ", " + String(id_evento) + ")";
         if(!(brinquedos.length - 1 === indice)){
             query = query + ", ";
@@ -69,7 +68,6 @@ const Evento = {
         
         let query = queryDeBuscaEvento() + filtroProximos15Dias;
         let res = await db.consultarDb(query);
-        console.log(res);
         return res;
     },
 
@@ -148,20 +146,45 @@ const Evento = {
 
     verificarSeBrinquedoEstaVago: async(id_brinquedo, id_evento) => {
         let data_evento = await queryDataEvento(id_evento);
-        let qtdBrinquedos = null, qtdBrinquedosNaData = null;
-        if(data_evento.status){
-            data_evento = data_evento.resultado[0].data;
-            qtdBrinquedos = await Brinquedo.selectQtdBrinquedos(id_brinquedo);
-            qtdBrinquedosNaData = await Evento.selectBrinquedosNaData(id_brinquedo, data_evento);
-            if((qtdBrinquedos - qtdBrinquedosNaData) > 0){
-                return true;
+        if(data_evento.resultado.length > 0){
+            let qtdBrinquedos = null, qtdBrinquedosNaData = null;
+            if(data_evento.status){
+                data_evento = data_evento.resultado[0].data;
+                qtdBrinquedos = await Brinquedo.selectQtdBrinquedos(id_brinquedo);
+                qtdBrinquedosNaData = await Evento.selectBrinquedosNaData(id_brinquedo, data_evento);
+                if((qtdBrinquedos - qtdBrinquedosNaData) > 0){
+                    return true;
+                }else{
+                    return false;
+                }
             }else{
                 return false;
             }
         }else{
             return false;
         }
+       
+    },
+    editarEvento: async(id_evento, evento) => {
+        let query = "UPDATE evento SET ? WHERE evento.id_evento = " + id_evento;
+        /* return new Promise(function (resolve) {
+            db.connection.query(query, evento, function (err, results, fields) {
+                if (err) {
+                    return resolve({status: false,
+                                    resultado: err});
+                }
+                return resolve({status: true,
+                                resultado: results});
+            });
+        }); */
+        return await db.consultarDb(query, evento);
+    },
+    
+    deletarBrinquedosNoEvento: async(id_evento) => {
+        let query = 'DELETE FROM evento_brinquedo WHERE evento_brinquedo.evento = ?';
+        return await db.consultarDb(query, id_evento);
     }
+    
 }
 
 

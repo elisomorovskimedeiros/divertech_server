@@ -99,13 +99,18 @@ let Interface = {
     },
 
     inserirBrinquedoEmEvento: async(dados) => {
-        let {idBrinquedo, idEvento} = dados;
-        let estaVago = await Evento.verificarSeBrinquedoEstaVago(idBrinquedo,idEvento);
-        if(estaVago){
-            return await Evento.inserirBrinquedosNoEvento(idEvento, [{id_brinquedo: idBrinquedo}]);
+        if(dados.hasOwnProperty('idBrinquedo') && dados.hasOwnProperty('idEvento')){
+            let {idBrinquedo, idEvento} = dados;
+            let estaVago = await Evento.verificarSeBrinquedoEstaVago(idBrinquedo,idEvento);
+            if(estaVago){
+                return await Evento.inserirBrinquedosNoEvento(idEvento, [{id_brinquedo: idBrinquedo}]);
+            }else{
+                return {erro: 'O brinquedo não está vago'};
+            }
         }else{
-            return {erro: 'O brinquedo não está vago'};
+            return {erro: "Ocorreu um erro na comunicação dos dados do evento"};
         }
+       
     },
 
     //Clientes
@@ -149,6 +154,11 @@ let Interface = {
         }
         return resp;
     },
+    
+    editarCliente: async(cliente) => {
+        let resp = await Cliente.editarCliente(cliente);
+        return resp;
+    },
 
     //Brinquedos
     mostrarTodosBrinquedos: async() => {
@@ -170,6 +180,59 @@ let Interface = {
             
         }*/
         return await Brinquedo.informarBrinquedosVagosNaData(data);
+    },
+    editarBrinquedo: async (brinquedo) => {
+        return await Brinquedo.editarBrinquedo(brinquedo);        
+    },
+    inserirBrinquedo: async (brinquedo) => {
+        return await Brinquedo.inserirBrinquedo(brinquedo);
+    },
+    editarEventoExistente: async (id_evento, evento) => {
+        let brinquedos = null;
+        if(evento.hasOwnProperty('cliente')){
+            evento.id_cliente = evento.cliente.id_cliente;
+            delete evento.cliente;
+        }
+        if(evento.hasOwnProperty('brinquedos')){
+            brinquedos = evento.brinquedos;
+            delete evento.brinquedos;
+        }
+        if(evento.hasOwnProperty('abrigo')){
+            evento.possui_local_abrigado = evento.abrigo;
+            delete evento.abrigo;
+        }
+        if(evento.hasOwnProperty('logradouro_evento')){
+            evento.logradouro = evento.logradouro_evento;
+            delete evento.logradouro_evento;
+        }
+        if(evento.hasOwnProperty('bairro_evento')){
+            evento.bairro = evento.bairro_evento;
+            delete evento.bairro_evento;
+        }
+        if(evento.hasOwnProperty('cidade_evento')){
+            evento.cidade = evento.cidade_evento;
+            delete evento.cidade_evento;
+        }
+        if(evento.hasOwnProperty('data_evento')){
+            evento.data = evento.data_evento;
+            delete evento.data_evento;
+        }
+        if(evento.hasOwnProperty('numero_evento')){
+            evento.numero = evento.numero_evento;
+            delete evento.numero_evento;
+        }
+        if(evento.hasOwnProperty('observacao_endereco_evento')){
+            evento.observacao = evento.observacao_endereco_evento;
+            delete evento.observacao_endereco_evento;
+        }
+        let res = await Evento.editarEvento(id_evento, evento);
+        if(res.status && brinquedos){
+            res = await Evento.deletarBrinquedosNoEvento(id_evento);
+            if(res.status){
+                res = await Evento.inserirBrinquedosNoEvento(id_evento, brinquedos);
+            }
+        }
+        return await res;
     }
 }
 

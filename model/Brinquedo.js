@@ -1,5 +1,7 @@
 const Db = require('../controller/Db');
 
+const fs = require('node:fs/promises');
+
 const Brinquedo = {
     selectTodosBrinquedos: async(coluna) => {
         if (!coluna){
@@ -59,6 +61,37 @@ const Brinquedo = {
             return false;
         }
         return quantidade;
+    },
+    editarBrinquedo: async (brinquedo) => {
+        console.log(brinquedo);
+        let query = 'UPDATE brinquedo SET ';
+        query +=  brinquedo.estaDisponivel? 'esta_disponivel = ' + '0': 'esta_disponivel = ' + '1 '; 
+        query +=  brinquedo.caracteristicas? ', caracteristicas = "' + brinquedo.caracteristicas + '" ':'';         
+        query +=  brinquedo.nome_brinquedo? ', nome_brinquedo = "' + brinquedo.nome_brinquedo + '" ': ''
+        query +=  brinquedo.observacao? ', observacao = "' + brinquedo.observacao + '" ': '' 
+        query +=  brinquedo.quantidade? ', quantidade = ' + brinquedo.quantidade + ' ': '' 
+        query +=  brinquedo.valor_brinquedo? ', valor_brinquedo = "' + brinquedo.valor_brinquedo + '" ': '' 
+        query +=  brinquedo.foto_brinquedo? ', foto_brinquedo = "' + brinquedo.foto_brinquedo + '" ': '' 
+        query +=  'where id_brinquedo = ' + brinquedo.id_brinquedo;
+        return await db.consultarDb(query);
+    },
+    inserirBrinquedo: async (brinquedo) => {
+        let query = 'INSERT INTO brinquedo (';
+        query +=  brinquedo.nome_brinquedo? 'nome_brinquedo' : '';
+        query +=  brinquedo.valor_brinquedo && !isNaN(brinquedo.valor_brinquedo)? ', valor_brinquedo' : '';
+        query +=  brinquedo.quantidade && !isNaN(brinquedo.quantidade)? ', quantidade' : '';
+        query +=  brinquedo.caracteristicas? ', caracteristicas' : '';
+        query +=  brinquedo.foto_brinquedo? ', foto_brinquedo' : '';
+        query +=  brinquedo.observacao? ', observacao' : '';
+        query += ', esta_disponivel) VALUES ("';
+        query +=  brinquedo.nome_brinquedo? brinquedo.nome_brinquedo + '", "' : '';
+        query +=  brinquedo.valor_brinquedo && !isNaN(brinquedo.valor_brinquedo)? brinquedo.valor_brinquedo + '", "' : '';
+        query +=  brinquedo.quantidade && !isNaN(brinquedo.quantidade)? brinquedo.quantidade + '", "' : '';
+        query +=  brinquedo.caracteristicas?  brinquedo.caracteristicas + '", "' : '';
+        query +=  brinquedo.foto_brinquedo?  brinquedo.foto_brinquedo + '", "' : '';
+        query +=  brinquedo.observacao?  brinquedo.observacao + '", ' : '';
+        query +=  '0 )';
+        return await db.consultarDb(query);
     }
 };
 
