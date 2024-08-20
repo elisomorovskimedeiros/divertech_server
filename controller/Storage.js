@@ -55,8 +55,8 @@ if (!fs.existsSync(definicoes.localAssets)) {
     fs.mkdirSync(definicoes.localAssets);
     console.log(`Pasta ${definicoes.localAssets} criada com sucesso!`);
   }catch(err){
-    console.err(`Ocorreu o seguinte erro ao tentar criar a pasta ${definicoes.localAssets}:`);
-    console.err(err);
+    console.log(`Ocorreu o seguinte erro ao tentar criar a pasta ${definicoes.localAssets}:`);
+    console.log(err);
   }
 }
 

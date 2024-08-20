@@ -72,6 +72,11 @@ router.put('/evento/:id', async(req, res) => {
     res.send(resp);
 });
 
+//confirmação ou cancelamento de evento
+router.put('/evento/confirmacao/:id', async(req, res) => {
+    res.send({status: true, resultado: req.params.id+ '  ' +req.body.status});
+});
+
 
 //REQUISIÇÕES DE CLIENTES
 router.get('/cliente/:id', async(req, res) => {
