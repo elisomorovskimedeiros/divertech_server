@@ -15,7 +15,6 @@ router.use(cors());
 //listar determinado evento pelo seu ID
 router.get('/evento/:id', async(req, res) => {
     let resp = await Int.mostrarEventoPorId(req.params.id);
-    console.log(resp)
     res.send({evento: resp});
 });
 
@@ -34,8 +33,6 @@ router.get('/eventos', async(req, res) => {
 //listar determinado evento
 router.get('/eventos/:filtro', async(req, res) => {
     let resp  = await Int.mostrarEventosComFiltro(req.params.filtro);
-    
-    console.log(resp)
     res.send({evento: resp});
 });
 
@@ -113,22 +110,23 @@ router.put('/cliente/:id_cliente', async(req, res) => {
 
 
 //REQUISIÇÕES DE BRINQUEDOS
+//retorna a lista com todos os brinquedos
 router.get('/brinquedos', async (req, res) => {
     let resp = await Int.mostrarTodosBrinquedos();
     res.send({brinquedo: resp});    
 });
-
+//retorna a lista com os brinquedos vagos para a data
 router.get('/brinquedos/data/:data', async (req, res) => {
     let resp = await Int.mostrarBrinquedosVagosNaData(req.params.data);
     res.send({brinquedo: resp});
 });
-
+//retorna a imagem do brinquedo
 router.get("/imagem/:nome", (req, res) => {
     let foto = __dirname+'/../public/imagens/'+ req.params.nome;
     res.download(foto);    
 });
 
-
+//atualiza a imagem do brinquedo
 router.put('/brinquedo/:id_brinquedo', upload.single('imagem'), async (req, res, next) => {
     let erro = null;
     /*const up = upload.single('imagem');
@@ -152,15 +150,16 @@ router.put('/brinquedo/:id_brinquedo', upload.single('imagem'), async (req, res,
     res.send(await Int.editarBrinquedo(req.body));
 
 });
-
+//insere uma imagem para o brinquedo
 router.post('/brinquedo', upload.single('imagem'), async (req, res) => {
     req.file? req.body.foto_brinquedo = req.file.filename: null;
     res.send(await Int.inserirBrinquedo(req.body));
 });
 
-
+//retorna quando for chamada rota inválida
 router.get('/*', (req, res) => {
-    res.send({erro: 'Solicitação não encontrada!'});
+    res.send({status: false,
+        resultado: "404, Rota não encontrada"});
 });
 
 module.exports = router;
